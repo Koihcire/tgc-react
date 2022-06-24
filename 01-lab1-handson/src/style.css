@@ -1,0 +1,36 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
+#menu {
+    background-color: black;
+    padding: 0;
+    margin: 0;
+}
+
+#menu li {
+    display: inline-block;
+    margin: 0 10px;
+    padding: 0;
+}
+
+#menu a {
+    text-decoration: none;
+    display: inline-block;
+    color: white;
+    padding: 10px;
+}
+
+#menu a:hover {
+    background-color: grey;
+}
+
+#hero {
+    background-image: url(japanese-food-1.jpeg);
+    width: 100%;
+    height: calc(100vh - 40px);
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}

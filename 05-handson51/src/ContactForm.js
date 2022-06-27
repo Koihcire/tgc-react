@@ -6,7 +6,7 @@ export default class ContactForm extends React.Component{
         "firstName": "",
         "lastName": "",
         "enquiry": "",
-        "country": ""
+        "country": "",
     }
 
     updateFormField = (e) =>{
@@ -47,7 +47,7 @@ export default class ContactForm extends React.Component{
                         <option value="thailand">Thailand</option>
                     </select>
                 </div>
-                <button onClick={this.summary}>Submit</button>
+                <button onClick={this.summary} disabled={!this.state.firstName || !this.state.lastName || !this.state.enquiry}>Submit</button>
 
             </React.Fragment>
         )

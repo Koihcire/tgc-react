@@ -32,6 +32,7 @@ export default class Dice extends React.Component {
                     "border": "1px solid green",
                     "padding": "10px",
                     "width": "20px",
+                    // checkColor has a () but roll does not because we want the return value of checkColor
                     "color": this.checkColor()
                 }}>{this.state.number}
                 </div>

@@ -11,7 +11,8 @@ export default class RestaurantBookingForm extends React.Component {
         appetizer: [],
         all_seating: [],
         all_smoking: [],
-        all_appetizer: []
+        all_appetizer: [],
+        loaded: false
     }
 
     updateFormField = (e) => {
@@ -36,20 +37,15 @@ export default class RestaurantBookingForm extends React.Component {
     }
 
     async componentDidMount(){
-        let r = await axios.get("./json/seating.json");
-        let all_seating = r.data;
-        console.log(all_seating)
-
-        r = await axios.get("./json/smoking.json");
-        let all_smoking = r.data;
-
-        r = await axios.get("./json/appetizer.json");
-        let all_appetizer = r.data;
+        let all_seating = await axios.get("./json/seating.json")
+        let all_smoking = await axios.get("./json/smoking.json")
+        let all_appetizer = await axios.get("./json/appetizer.json")
 
         this.setState({
-            "all_seating": all_seating,
-            "all_smoking": all_smoking,
-            "all_appetizer": all_appetizer
+            "all_seating": all_seating.data,
+            "all_smoking": all_smoking.data,
+            "all_appetizer": all_appetizer.data,
+            "loaded": true
         })
     }
 

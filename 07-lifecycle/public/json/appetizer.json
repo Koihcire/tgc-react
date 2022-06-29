@@ -14,5 +14,9 @@
     {
         "display": "Peanuts",
         "value": "peanuts"
+    },
+    {
+        "display": "Anchovies",
+        "value": "anchovies"
     }
 ]

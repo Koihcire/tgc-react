@@ -6,5 +6,9 @@
     {
         "display": "Smoking",
         "value": "smoking"
+    },
+    {
+        "display": "Cigars",
+        "value": "cigars"
     }
 ]

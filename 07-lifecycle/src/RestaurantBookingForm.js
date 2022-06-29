@@ -12,11 +12,10 @@ export default class RestaurantBookingForm extends React.Component {
         all_seating: [],
         all_smoking: [],
         all_appetizer: []
-
     }
 
     updateFormField = (e) => {
-        if (e.target.type == "checkbox") {
+        if (e.target.type === "checkbox") {
             let currentValues = this.state[e.target.name];
             let modifiedValues;
             if (!currentValues.includes(e.target.value)) {
@@ -39,6 +38,7 @@ export default class RestaurantBookingForm extends React.Component {
     async componentDidMount(){
         let r = await axios.get("./json/seating.json");
         let all_seating = r.data;
+        console.log(all_seating)
 
         r = await axios.get("./json/smoking.json");
         let all_smoking = r.data;
@@ -52,21 +52,6 @@ export default class RestaurantBookingForm extends React.Component {
             "all_appetizer": all_appetizer
         })
     }
-
-    // updateAppetizer = (e) => {
-    //     let currentValues = this.state[e.target.name];
-    //     let modifiedValues;
-    //     if (!currentValues.includes(e.target.value)) {
-    //         modifiedValues = [...currentValues, e.target.value];
-    //     } else {
-    //         modifiedValues = currentValues.filter((element) => {
-    //             return element !== e.target.value
-    //         })
-    //     }
-    //     this.setState({
-    //         [e.target.name]: modifiedValues
-    //     })
-    // }
 
     render() {
         return (

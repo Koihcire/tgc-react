@@ -7,7 +7,7 @@ export default class SurveyForm extends React.Component{
     state={
         name: "",
         countries: "",
-        fruits: "",
+        fruits: [],
         colors: "",
         all_countries:[],
         all_fruits: [],
@@ -15,7 +15,7 @@ export default class SurveyForm extends React.Component{
     }
 
     updateFormField = (e) =>{
-        if (e.target.type == "checkbox"){
+        if (e.target.type === "checkbox"){
             let currentValues = this.state[e.target.name];
             let modifiedValues;
             if (!currentValues.includes(e.target.value)){
@@ -80,7 +80,7 @@ export default class SurveyForm extends React.Component{
                 </div>
                 <div>
                     <label>Countries: </label>
-                    <select name="countries" value={this.state.country} onChange={this.updateFormField}>
+                    <select name="countries"  value={this.state.countries} onChange={this.updateFormField}>
                         {this.state.all_countries.map((c)=>
                             <option key={c.value} value={c.value}>{c.display}</option>
                         )}

@@ -1,7 +1,5 @@
 import React from "react"
-import axios from "axios"
 import "bootstrap/dist/css/bootstrap.min.css"
-import TaskList from "./TaskList"
 
 export default class BudgetTracker extends React.Component {
 
@@ -63,6 +61,8 @@ export default class BudgetTracker extends React.Component {
         modifiedExpenseItem: "",
         modifiedExpenseAmount: "",
         modifiedExpenseCategory: "",
+
+        expenseBeingDeleted: null,
     }
 
     updateFormField = (e) => {
@@ -71,14 +71,14 @@ export default class BudgetTracker extends React.Component {
         })
     }
 
-    updateReconciled = (expense) =>{
+    updateReconciled = (expense) => {
         let clonedExpense = {
             ...expense, reconciled: !expense.reconciled
         };
         // console.log(clonedExpense)
 
-        let index = this.state.expenses.findIndex(function (e){
-            if (e._id === clonedExpense._id){
+        let index = this.state.expenses.findIndex(function (e) {
+            if (e._id === clonedExpense._id) {
                 return true;
             } else {
                 return false;
@@ -88,9 +88,9 @@ export default class BudgetTracker extends React.Component {
 
         this.setState({
             expenses: [
-                ...this.state.expenses.slice(0,index), 
+                ...this.state.expenses.slice(0, index),
                 clonedExpense,
-                ...this.state.expenses.slice(index+1)
+                ...this.state.expenses.slice(index + 1)
             ]
         })
     }
@@ -111,7 +111,7 @@ export default class BudgetTracker extends React.Component {
         })
     }
 
-    updateExpense = () =>{
+    updateExpense = () => {
         const modifiedExpense = {
             ...this.state.expenseBeingEdited,
             item: this.state.modifiedExpenseItem,
@@ -130,27 +130,27 @@ export default class BudgetTracker extends React.Component {
         })
     }
 
-    displayEditExpense = (expense) =>{
+    displayEditExpense = (expense) => {
         return (
             <div className="card">
-                    <div className="card-body">
-                        <h5 className="card-title">
-                            Item: <input type="text" name="modifiedExpenseItem" className="form-control" value={this.state.modifiedExpenseItem} onChange={this.updateFormField}/>
-                        </h5>
-                        <h6>
-                            Amount: <input type="text" name="modifiedExpenseAmount" className="form-control" value={this.state.modifiedExpenseAmount} onChange={this.updateFormField}/>
-                        </h6>
-                        <div>
-                            <label>Category:</label>
-                            <select name="modifiedExpenseCategory" value={this.state.modifiedExpenseAmount} onChange={this.updateFormField}>
-                                {this.state.allCategories.map(c => (
-                                    <option key={c.value} value={c.value}>{c.display}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <button className="btn btn-sm btn-primary mt-2" onClick={this.updateExpense}>Update</button>
+                <div className="card-body">
+                    <h5 className="card-title">
+                        Item: <input type="text" name="modifiedExpenseItem" className="form-control" value={this.state.modifiedExpenseItem} onChange={this.updateFormField} />
+                    </h5>
+                    <h6>
+                        Amount: <input type="text" name="modifiedExpenseAmount" className="form-control" value={this.state.modifiedExpenseAmount} onChange={this.updateFormField} />
+                    </h6>
+                    <div>
+                        <label>Category:</label>
+                        <select name="modifiedExpenseCategory" value={this.state.modifiedExpenseAmount} onChange={this.updateFormField}>
+                            {this.state.allCategories.map(c => (
+                                <option key={c.value} value={c.value}>{c.display}</option>
+                            ))}
+                        </select>
                     </div>
+                    <button className="btn btn-sm btn-primary mt-2" onClick={this.updateExpense}>Update</button>
                 </div>
+            </div>
         )
     }
 
@@ -162,12 +162,12 @@ export default class BudgetTracker extends React.Component {
                     <h6>${(expense.amount / 100).toFixed(2)}</h6>
                     <h6>Category: {expense.category}</h6>
                     <div>
-                        <input key={expense._id} type="checkbox" checked={expense.reconciled} onChange={()=>{
+                        <input key={expense._id} type="checkbox" checked={expense.reconciled} onChange={() => {
                             this.updateReconciled(expense);
-                        }}/> Reconciled
+                        }} /> Reconciled
                     </div>
                     <div className="mt-2">
-                        <button className="btn btn-sm btn-primary" onClick={()=>{
+                        <button className="btn btn-sm btn-primary" onClick={() => {
                             this.setState({
                                 expenseBeingEdited: expense,
                                 modifiedExpenseItem: expense.item,
@@ -175,11 +175,50 @@ export default class BudgetTracker extends React.Component {
                                 modifiedExpenseCategory: expense.category,
                             })
                         }}>Edit</button>
-                        <button className="btn btn-sm btn-danger ms-2">Delete</button>
+                        <button className="btn btn-sm btn-danger ms-2" onClick={() => {
+                            this.setState({
+                                expenseBeingDeleted: expense,
+                            })
+                        }}>Delete</button>
                     </div>
                 </div>
             </div>
         )
+    }
+
+    displayDeleteExpense = (expense) => {
+        return (
+            <React.Fragment>
+                <div className="card">
+                    <div className="card-body">
+                        Are you sure you want to delete this expense record? (item: {expense.item})
+                        <div className="mt-2">
+                            <button className="btn btn-sm btn-danger" onClick={()=>{this.processDeleteExpense(expense)}}>Yes</button>
+                            <button className="btn btn-sm btn-primary ms-2" onClick={()=>{
+                                this.setState({
+                                    expenseBeingDeleted: null
+                                })
+                            }}>No</button>
+                        </div>
+                    </div>
+                </div>
+            </React.Fragment>
+        )
+    }
+
+    processDeleteExpense = (expense) => {
+        let index = this.state.expenses.findIndex(e => e._id === expense._id);
+
+        if (index === -1){
+            return;
+        }
+
+        let cloned = this.state.expenses.slice();
+        cloned.splice(index,1);
+        this.setState({
+            expenses: cloned,
+            expenseBeingDeleted: null
+        })
     }
 
     render() {
@@ -191,11 +230,23 @@ export default class BudgetTracker extends React.Component {
                 {/* display the expenses */}
                 {this.state.expenses.map(m => (
                     <React.Fragment>
-                        {this.state.expenseBeingEdited === null || this.state.expenseBeingEdited._id !== m._id ? 
+                        {
+                            (() => {
+                                if (this.state.expenseBeingEdited != null && this.state.expenseBeingEdited._id === m._id) {
+                                    return this.displayEditExpense(m)
+                                } else if (this.state.expenseBeingDeleted != null && this.state.expenseBeingDeleted._id === m._id) {
+                                    return this.displayDeleteExpense(m)
+                                } else {
+                                    return this.displayExpenses(m);
+                                }
+                            })()
+                        }
+
+                        {/* {this.state.expenseBeingEdited === null || this.state.expenseBeingEdited._id !== m._id ? 
                             this.displayExpenses(m)
                             :
                             this.displayEditExpense(m)
-                        }
+                        } */}
                     </React.Fragment>
                 ))}
                 <hr></hr>
@@ -204,10 +255,10 @@ export default class BudgetTracker extends React.Component {
                 <div className="card">
                     <div className="card-body">
                         <h5 className="card-title">
-                            Item: <input type="text" name="newExpenseItem" className="form-control" value={this.state.newExpenseItem} onChange={this.updateFormField}/>
+                            Item: <input type="text" name="newExpenseItem" className="form-control" value={this.state.newExpenseItem} onChange={this.updateFormField} />
                         </h5>
                         <h6>
-                            Amount: <input type="text" name="newExpenseAmount" className="form-control" value={this.state.newExpenseAmount} onChange={this.updateFormField}/>
+                            Amount: <input type="text" name="newExpenseAmount" className="form-control" value={this.state.newExpenseAmount} onChange={this.updateFormField} />
                         </h6>
                         <div>
                             <label>Category:</label>

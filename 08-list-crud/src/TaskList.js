@@ -1,5 +1,6 @@
 import React from "react"
 import axios from "axios"
+import "bootstrap/dist/css/bootstrap.min.css"
 
 export default class TaskList extends React.Component {
 
@@ -109,7 +110,9 @@ export default class TaskList extends React.Component {
                         modifiedTaskName: task.description
                     }) //can write this function directly if the edit button is the only place calling this function
                 }}>Edit</button>
-                <button className="btn btn-sm btn-danger ms-2 mt-2">Delete</button>
+                <button className="btn btn-sm btn-danger ms-2 mt-2" onClick={()=>{
+                    this.deleteTask(task)
+                }}>Delete</button>
             </li>
         )
 
@@ -123,6 +126,16 @@ export default class TaskList extends React.Component {
         //update in the middle of an array
         //0. find the index of the task that we want to update
         let index = this.state.tasks.findIndex(t => t.id === modifiedTask.id) //arrow function returns true
+        //manual linear search
+        // let index=-1; //no such index at -1 means not found
+        // for (let i=0, i < this.state.tasks.length, i++){
+        //     if (this.state.tasks[i].id === modifiedTask.id){
+        //         index = i            
+        //     } else {
+        //         break
+        //     }
+        // }
+        
         //1. clone the existing array
         let cloned = this.state.tasks.slice()
         //2. modify the array
@@ -137,10 +150,23 @@ export default class TaskList extends React.Component {
     displayEditTask(task) {
         return (
             <li className="=mt-2">
-                <input type="text" name="modifiedTaskName" value={this.state.modifiedTaskName} onChange={this.updateFormField} />
+                <input key={task.id} type="text" name="modifiedTaskName" value={this.state.modifiedTaskName} onChange={this.updateFormField} />
                 <button className="btn btn-sm btn-primary" onClick={this.updateTask}>Update</button>
             </li>
         )
+    }
+
+    deleteTask=(task)=>{
+        //find index of task we want to delete
+        let index = this.state.tasks.findIndex(t => t.id === task.id)
+        //remove from the middle 
+        const cloned = [
+            ...this.state.tasks.slice(0,index),
+            ...this.state.tasks.slice(index+1)
+        ]
+        this.setState({
+            tasks: cloned
+        })
     }
 
     render() {
@@ -154,8 +180,6 @@ export default class TaskList extends React.Component {
                             this.displayTask(t)
                             :
                             this.displayEditTask(t)}
-
-
                     </React.Fragment>))}
                 </ul>
 

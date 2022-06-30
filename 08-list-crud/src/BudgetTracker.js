@@ -99,7 +99,7 @@ export default class BudgetTracker extends React.Component {
         let newExpense = {
             _id: Math.floor(Math.random() * 100 + 1),
             item: this.state.newExpenseItem,
-            amount: this.state.newExpenseAmount,
+            amount: this.state.newExpenseAmount*100,
             category: this.state.newExpenseCategory,
             reconciled: false
         }
@@ -107,8 +107,13 @@ export default class BudgetTracker extends React.Component {
         let cloned = this.state.expenses.slice();
         cloned.push(newExpense);
         this.setState({
-            expenses: cloned
+            expenses: cloned,
+            newExpenseItem: "",
+            newExpenseAmount: "",
+            newExpenseCategory: "others"
         })
+
+
     }
 
     updateExpense = () => {
@@ -221,12 +226,21 @@ export default class BudgetTracker extends React.Component {
         })
     }
 
+    calculateTotal=()=>{
+        let totalSoFar= 0;
+        for (let expense of this.state.expenses){
+            totalSoFar += Number(expense.amount)/100
+        }
+        
+        return totalSoFar.toFixed(2);
+    }
+
     render() {
         return (
             <React.Fragment>
                 <h2>Budget Tracker</h2>
                 {/* calculate total expense */}
-
+                <h4>Total Spent: ${this.calculateTotal()}</h4>
                 {/* display the expenses */}
                 {this.state.expenses.map(m => (
                     <React.Fragment>
@@ -258,7 +272,7 @@ export default class BudgetTracker extends React.Component {
                             Item: <input type="text" name="newExpenseItem" className="form-control" value={this.state.newExpenseItem} onChange={this.updateFormField} />
                         </h5>
                         <h6>
-                            Amount: <input type="text" name="newExpenseAmount" className="form-control" value={this.state.newExpenseAmount} onChange={this.updateFormField} />
+                            Amount (in dollars eg. 15.60): <input type="text" name="newExpenseAmount" className="form-control" value={this.state.newExpenseAmount} onChange={this.updateFormField} placeholder="$"/>
                         </h6>
                         <div>
                             <label>Category:</label>

@@ -8,9 +8,9 @@ function App() {
     <React.Fragment>
       <h1>List CRUD</h1>
       <div className="container">
-      {/* <TaskList/> */}
+      <TaskList/>
       <hr></hr>
-      <BudgetTracker/>
+      {/* <BudgetTracker/> */}
       </div>
     </React.Fragment>
   );

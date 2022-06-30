@@ -1,6 +1,12 @@
 import React from "react"
 import axios from "axios"
 import "bootstrap/dist/css/bootstrap.min.css"
+import Modal from "react-bootstrap/Modal";
+import ModalBody from "react-bootstrap/ModalBody";
+import ModalHeader from "react-bootstrap/ModalHeader";
+import ModalFooter from "react-bootstrap/ModalFooter";
+import ModalTitle from "react-bootstrap/ModalTitle";
+
 
 export default class TaskList extends React.Component {
 
@@ -25,6 +31,7 @@ export default class TaskList extends React.Component {
         newTaskName: "",
         taskBeingEdited: null, //alternatively, store the id of the task that is being edited (lab sheet example)
         modifiedTaskName: "",
+        taskBeingDeleted: null
     }
 
     updateFormField = (e) => {
@@ -99,7 +106,7 @@ export default class TaskList extends React.Component {
 
     displayTask = (task) => {
         return (
-            <li>
+            <li className="mt-2">
                 {task.description}
                 <input key={(task.id)} type="checkbox" className="form-check-input ms-3 mt-2" checked={task.done} onChange={() => {
                     this.updateTaskDone(task); //use closure function to pass in the t value into the function updateTaskDone
@@ -110,8 +117,10 @@ export default class TaskList extends React.Component {
                         modifiedTaskName: task.description
                     }) //can write this function directly if the edit button is the only place calling this function
                 }}>Edit</button>
-                <button className="btn btn-sm btn-danger ms-2 mt-2" onClick={()=>{
-                    this.deleteTask(task)
+                <button className="btn btn-sm btn-danger ms-2 mt-2" onClick={() => {
+                    this.setState({
+                        taskBeingDeleted: task
+                    })
                 }}>Delete</button>
             </li>
         )
@@ -135,7 +144,7 @@ export default class TaskList extends React.Component {
         //         break
         //     }
         // }
-        
+
         //1. clone the existing array
         let cloned = this.state.tasks.slice()
         //2. modify the array
@@ -149,20 +158,52 @@ export default class TaskList extends React.Component {
 
     displayEditTask(task) {
         return (
-            <li className="=mt-2">
+            <li className="mt-2">
                 <input key={task.id} type="text" name="modifiedTaskName" value={this.state.modifiedTaskName} onChange={this.updateFormField} />
-                <button className="btn btn-sm btn-primary" onClick={this.updateTask}>Update</button>
+                <button className="btn btn-sm btn-primary ms-2" onClick={this.updateTask}>Update</button>
             </li>
         )
     }
 
-    deleteTask=(task)=>{
+    displayDeleteTask = (task) => {
+        return (
+            <React.Fragment>
+                <Modal show={true}>
+                    <ModalHeader>
+                        <ModalTitle>Confirm Delete</ModalTitle>
+                    </ModalHeader>
+                    <ModalBody>{task.description}</ModalBody>
+                    <ModalFooter>
+                        <button className="btn btn-sm btn-danger" onClick={() => {
+                            this.processDeleteTask(task)
+                        }}>Yes</button>
+                        <button className="btn btn-sm btn-primary" onClick={() => {
+                            this.setState({
+                                taskBeingDeleted: null
+                            })
+                        }}>No</button>
+                    </ModalFooter>
+                </Modal>
+                {/* Are you sure you want to delete this task? ({task.description})
+                <button className="btn btn-sm btn-danger" onClick={()=>{
+                    this.processDeleteTask(task)
+                }}>Yes</button>
+                <button className="btn btn-sm btn-primary" onClick={()=>{
+                    this.setState({
+                        taskBeingDeleted: null
+                    })
+                }}>No</button> */}
+            </React.Fragment>
+        )
+    }
+
+    processDeleteTask = (task) => {
         //find index of task we want to delete
         let index = this.state.tasks.findIndex(t => t.id === task.id)
         //remove from the middle 
         const cloned = [
-            ...this.state.tasks.slice(0,index),
-            ...this.state.tasks.slice(index+1)
+            ...this.state.tasks.slice(0, index),
+            ...this.state.tasks.slice(index + 1)
         ]
         this.setState({
             tasks: cloned
@@ -176,10 +217,22 @@ export default class TaskList extends React.Component {
                 <ul>
                     {this.state.tasks.map(t => (<React.Fragment>
 
-                        {this.state.taskBeingEdited === null || this.state.taskBeingEdited.id !== t.id ?
+                        {
+                            (() => {
+                                if (this.state.taskBeingEdited != null && this.state.taskBeingEdited.id === t.id) {
+                                    return this.displayEditTask(t)
+                                } else if (this.state.taskBeingDeleted != null && this.state.taskBeingDeleted.id === t.id) {
+                                    return this.displayDeleteTask(t)
+                                } else {
+                                    return this.displayTask(t)
+                                }
+                            })()
+                        }
+
+                        {/* {this.state.taskBeingEdited === null || this.state.taskBeingEdited.id !== t.id ?
                             this.displayTask(t)
                             :
-                            this.displayEditTask(t)}
+                            this.displayEditTask(t)} */}
                     </React.Fragment>))}
                 </ul>
 

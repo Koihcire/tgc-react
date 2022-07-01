@@ -5,7 +5,6 @@ import DisplayEditTask from "./components/DisplayEditTask";
 import DisplayDeleteTask from "./components/DisplayDeleteTask";
 import DisplayAddNewTask from "./components/DisplayAddNewTask";
 
-
 export default class TaskList extends React.Component {
 
     state = {
@@ -165,29 +164,23 @@ export default class TaskList extends React.Component {
                 <h2>To Do List</h2>
                 <ul>
                     {this.state.tasks.map(t => (<React.Fragment>
-
                         {
                             (() => {
                                 if (this.state.taskBeingEdited != null && this.state.taskBeingEdited.id === t.id) {
-                                    // return this.displayEditTask(t)
                                     return <DisplayEditTask task={t}
                                                             modifiedTaskName={this.state.modifiedTaskName}
                                                             updateFormField={this.updateFormField}
                                                             updateTask={this.updateTask}/>
                                 } else if (this.state.taskBeingDeleted != null && this.state.taskBeingDeleted.id === t.id) {
-                                    // return this.displayDeleteTask(t)
                                     return <DisplayDeleteTask task={t} 
                                                             description={t.description}
                                                             processDeleteTask={this.processDeleteTask}
                                                             endDeleteTask={this.endDeleteTask}/>
                                 } else {
-                                    // return this.displayTask(t)
                                     return <DisplayTask task={t}  
                                                         updateTaskDone={this.updateTaskDone}
-                                                        key={t.id}
                                                         beginEditTask={this.beginEditTask}
-                                                        beginDeleteTask={this.beginDeleteTask}
-                                                        />
+                                                        beginDeleteTask={this.beginDeleteTask}/>
                                 }
                             })()
                         }

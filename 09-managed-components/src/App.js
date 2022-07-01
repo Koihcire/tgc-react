@@ -1,7 +1,7 @@
 import React from "react"
-import SignupForm from "./SignupForm";
 import TaskList from "./TaskList";
 import "bootstrap/dist/css/bootstrap.min.css"
+import BudgetTracker from "./BudgetTracker";
 
 
 function App() {
@@ -9,8 +9,8 @@ function App() {
    <React.Fragment>
     <h1>Managed Components</h1>
     
-    <SignupForm/>
     <TaskList/>
+    <BudgetTracker/>
    </React.Fragment>
   );
 }

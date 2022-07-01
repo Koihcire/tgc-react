@@ -10,7 +10,7 @@ function App() {
       <div className="container">
       <TaskList/>
       <hr></hr>
-      {/* <BudgetTracker/> */}
+      <BudgetTracker/>
       </div>
     </React.Fragment>
   );

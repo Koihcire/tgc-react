@@ -1,5 +1,11 @@
 import React from "react"
 import "bootstrap/dist/css/bootstrap.min.css"
+import Modal from "react-bootstrap/Modal";
+import ModalBody from "react-bootstrap/ModalBody";
+import ModalHeader from "react-bootstrap/ModalHeader";
+import ModalFooter from "react-bootstrap/ModalFooter";
+import ModalTitle from "react-bootstrap/ModalTitle";
+import "./BudgetTracker.css"
 
 export default class BudgetTracker extends React.Component {
 
@@ -99,7 +105,7 @@ export default class BudgetTracker extends React.Component {
         let newExpense = {
             _id: Math.floor(Math.random() * 100 + 1),
             item: this.state.newExpenseItem,
-            amount: this.state.newExpenseAmount*100,
+            amount: this.state.newExpenseAmount * 100,
             category: this.state.newExpenseCategory,
             reconciled: false
         }
@@ -143,7 +149,7 @@ export default class BudgetTracker extends React.Component {
                         Item: <input type="text" name="modifiedExpenseItem" className="form-control" value={this.state.modifiedExpenseItem} onChange={this.updateFormField} />
                     </h5>
                     <h6>
-                        Amount: <input type="text" name="modifiedExpenseAmount" className="form-control" value={this.state.modifiedExpenseAmount} onChange={this.updateFormField} />
+                        Amount: $ <input type="text" name="modifiedExpenseAmount" className="form-control" value={(this.state.modifiedExpenseAmount / 100).toFixed(2)} onChange={this.updateFormField} />
                     </h6>
                     <div>
                         <label>Category:</label>
@@ -161,7 +167,7 @@ export default class BudgetTracker extends React.Component {
 
     displayExpenses = (expense) => {
         return (
-            <div className="card mt-2">
+            <div className="card mt-2 card-width">
                 <div className="card-body">
                     <h5 className="card-title">{expense.item}</h5>
                     <h6>${(expense.amount / 100).toFixed(2)}</h6>
@@ -194,44 +200,69 @@ export default class BudgetTracker extends React.Component {
     displayDeleteExpense = (expense) => {
         return (
             <React.Fragment>
-                <div className="card">
-                    <div className="card-body">
-                        Are you sure you want to delete this expense record? (item: {expense.item})
-                        <div className="mt-2">
-                            <button className="btn btn-sm btn-danger" onClick={()=>{this.processDeleteExpense(expense)}}>Yes</button>
-                            <button className="btn btn-sm btn-primary ms-2" onClick={()=>{
-                                this.setState({
-                                    expenseBeingDeleted: null
-                                })
-                            }}>No</button>
-                        </div>
+                <Modal show={true}>
+                    <ModalHeader>
+                        <ModalTitle>Confirm Delete Record</ModalTitle>
+                    </ModalHeader>
+                    <ModalBody>
+                        <h5>{expense.item}</h5>
+                        <h6>${(expense.amount/100).toFixed(2)}</h6>
+                        <h6>Category: {expense.category}</h6>
+                        <div>
+                        <input key={expense._id} type="checkbox" checked={expense.reconciled} onChange={() => {
+                            this.updateReconciled(expense);
+                        }} disabled/> Reconciled
                     </div>
-                </div>
+                    </ModalBody>
+                    <ModalFooter>
+                        <button className="btn btn-sm btn-danger" onClick={() => { this.processDeleteExpense(expense) }}>Yes</button>
+                        <button className="btn btn-sm btn-primary ms-2" onClick={() => {
+                            this.setState({
+                                expenseBeingDeleted: null
+                            })
+                        }}>No</button>
+                    </ModalFooter>
+                </Modal>
             </React.Fragment>
+            // <React.Fragment>
+            //     <div className="card">
+            //         <div className="card-body">
+            //             Are you sure you want to delete this expense record? (item: {expense.item})
+            //             <div className="mt-2">
+            //                 <button className="btn btn-sm btn-danger" onClick={()=>{this.processDeleteExpense(expense)}}>Yes</button>
+            //                 <button className="btn btn-sm btn-primary ms-2" onClick={()=>{
+            //                     this.setState({
+            //                         expenseBeingDeleted: null
+            //                     })
+            //                 }}>No</button>
+            //             </div>
+            //         </div>
+            //     </div>
+            // </React.Fragment>
         )
     }
 
     processDeleteExpense = (expense) => {
         let index = this.state.expenses.findIndex(e => e._id === expense._id);
 
-        if (index === -1){
+        if (index === -1) {
             return;
         }
 
         let cloned = this.state.expenses.slice();
-        cloned.splice(index,1);
+        cloned.splice(index, 1);
         this.setState({
             expenses: cloned,
             expenseBeingDeleted: null
         })
     }
 
-    calculateTotal=()=>{
-        let totalSoFar= 0;
-        for (let expense of this.state.expenses){
-            totalSoFar += Number(expense.amount)/100
+    calculateTotal = () => {
+        let totalSoFar = 0;
+        for (let expense of this.state.expenses) {
+            totalSoFar += Number(expense.amount) / 100
         }
-        
+
         return totalSoFar.toFixed(2);
     }
 
@@ -266,13 +297,13 @@ export default class BudgetTracker extends React.Component {
                 <hr></hr>
                 {/* form for adding new expense */}
                 <h3>Add a new expense</h3>
-                <div className="card">
+                <div className="card card-width">
                     <div className="card-body">
                         <h5 className="card-title">
                             Item: <input type="text" name="newExpenseItem" className="form-control" value={this.state.newExpenseItem} onChange={this.updateFormField} />
                         </h5>
                         <h6>
-                            Amount (in dollars eg. 15.60): <input type="text" name="newExpenseAmount" className="form-control" value={this.state.newExpenseAmount} onChange={this.updateFormField} placeholder="$"/>
+                            Amount: $<input type="text" name="newExpenseAmount" className="form-control" value={this.state.newExpenseAmount} onChange={this.updateFormField}/>
                         </h6>
                         <div>
                             <label>Category:</label>
